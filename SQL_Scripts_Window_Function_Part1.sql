@@ -1,3 +1,4 @@
+-- Video: https://www.youtube.com/watch?v=Ww71knvhQ-s
 
 drop table employee;
 create table employee
@@ -60,6 +61,7 @@ from employee e;
 
 -- row_number(), rank() and dense_rank()
 -- row_number() assigns a unique value to each of the record in the table 但是自己试了一下 row number 不见得是按照 record 本身在 tabele 中的顺序 assign 的，就是随机 assin 的
+-- （会发现 emp_id 不是sorted，如果需要某种顺序，需要在 over clause 中加 order by）
 select e.*,
 row_number() over(partition by dept_name) as rn
 from employee e;
@@ -92,6 +94,8 @@ rank() over(partition by dept_name order by salary desc) as rnk,
 dense_rank() over(partition by dept_name order by salary desc) as dense_rnk,
 row_number() over(partition by dept_name order by salary desc) as rn
 from employee e;
+-- rank will skip a value for every duplicates; dense_rank will not skip any value
+-- row_number just add a unique number to every record
 
 
 -- 自己加：（面试题）找出 salary 排前三的人
@@ -121,7 +125,12 @@ from employee e;
 select e.*,
 lag(salary, -2) over() as prev_salary
 from employee e;
+-- lag: get the record from previous rows
 
+-- if there is no previous records, it returns null by default, but you can specify a particular value
+select e.*,
+lag(salary, 2, 0) over(partition by dept_name order by emp_id) as prev_emp_salary 
+from employee e;
 
 
 -- fetch a query to display if the salary of an employee is higher, lower or equal to the previous employee.
@@ -132,8 +141,27 @@ case when e.salary > lag(salary) over(partition by dept_name order by emp_id) th
 	 when e.salary = lag(salary) over(partition by dept_name order by emp_id) then 'Same than previous employee' end as sal_range
 from employee e;
 
+
 -- Similarly using lead function to see how it is different from lag.
 select e.*,
 lag(salary) over(partition by dept_name order by emp_id) as prev_empl_sal,
 lead(salary) over(partition by dept_name order by emp_id) as next_empl_sal
+from employee e;
+
+
+-- 自己加：关于 lead
+select e.*,
+lead(salary, 3) over(order by salary) as next_empl_sal
+from employee e;
+
+select e.*,
+lead(salary, -3) over(order by emp_id) as next_empl_sal      -- lead + 负offset = lag + 正offset
+from employee e;
+
+
+-- 自己加：其他 window function example
+select e.*,
+count(*) over(partition by dept_name) as count_of_emp,
+sum(e.salary) over(partition by dept_name) as sum_of_salary,
+avg(e.salary) over(partition by dept_name) as avg_of_salary
 from employee e;

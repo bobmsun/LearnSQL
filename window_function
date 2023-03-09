@@ -1,0 +1,32 @@
+
+摘自：https://www.sqltutorial.org/sql-window-functions/
+
+SQL window function types
+The window functions are divided into three types value window functions, aggregation window functions, and ranking window functions:
+
+Value window functions:
+FIRST_VALUE()
+LAG()
+LAST_VALUE()
+LEAD()
+
+Ranking window functions:
+CUME_DIST()
+DENSE_RANK()
+NTILE()
+PERCENT_RANK()
+RANK()
+ROW_NUMBER()
+
+Aggregate window functions:
+AVG()
+COUNT()
+MAX()
+MIN()
+SUM()
+
+
+摘自：有一个很好的 window function 的图
+https://www.stratascratch.com/blog/the-ultimate-guide-to-sql-window-functions/
+
+
