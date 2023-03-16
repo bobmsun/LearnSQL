@@ -1,0 +1,108 @@
+-- INNER join = Fetches only matching records in both tables based on the JOIN condition.
+
+-- FULL join = INNER JOIN
+--           + all remaining records from Left Table (returns null value for any columns fetched)
+--           + all remaining records from Right Table (returns null value for any columns fetched)
+
+drop table if exists employee;
+create table if not exists employee (
+	emp_id       varchar(20),
+	emp_name     varchar(20),
+	salary       float,
+	dept_id      varchar(20),
+	manager_id   varchar(20)
+);
+
+insert into employee values
+('E1', 'Rahul', 15000, 'D1', 'M1'),
+('E2', 'Manoj', 15000, 'D1', 'M1'),
+('E3', 'James', 55000, 'D2', 'M2'),
+('E4', 'Michael', 25000, 'D2', 'M2'),
+('E5', 'Ali', 20000, 'D10', 'M3'),
+('E6', 'Robin', 35000, 'D10', 'M3')
+;
+
+drop table if exists department;
+create table if not exists department (
+    dept_id      varchar(20),
+	dept_name    varchar(20)
+);
+
+insert into department values
+('D1', 'IT'),
+('D2', 'HR'),
+('D3', 'Finance'),
+('D4', 'Admin');
+
+select * from employee;
+select * from department;
+
+
+-- CROSS JOIN (is also refered to as cartesian join)
+-- CROSS JOIN returns cartesian product, meaning every record from the left table will match with every record from right table
+
+select e.emp_name, d.dept_name
+from employee e
+cross join department d;     -- cross join does not need a join condition, no need to specify a "on" clause here, the join condition is not required at all for cross join
+-- will get 24 records (because the employee table has 6 records x the department table has 4 records)
+-- Every single employee in the employee table was matched with every single department from the department table
+-- the number of records in the cross join result is always equal to # records from left table x # records from right table
+
+
+-- NATURAL JOIN
+select e.emp_name, d.dept_name 
+from employee e
+natural join department d;    
+-- when using natural join, don't need to specify a join condition. If add a join a coindition, will throw an error.
+-- SQL will decide the join condition. Based on which column the join should happen will be decided by SQL, not by the user. (and this can be a major problem when using natural join)
+-- Natural join will do an inner join, if there are two columns that share the same column names in the two tables.
+-- If there are no two columns sharing the same column names between the two tables, then it will try to do a cross join.
+-- If there are more than one columns sharing the same name, then the join will happen on all of the columns which are sharing the same name.
+-- highly recommend: Never to use NATURAL JOIN!!
+
+
+
+-- SELF JOIN
+-- join a table to itself
+
+drop table if exists family;
+create table family (
+    member_id      varchar(20),   -- a unique id of each family member
+	name           varchar(20),
+	age            int,
+	parent_id      varchar(20)    -- the id of the parent of the family member
+);
+
+insert into family values
+('F1', 'David', 4, 'F5'),
+('F2', 'Carol', 10, 'F5'),
+('F3', 'Michael', 12, 'F5'),
+('F4', 'Johnson', 36, ''),
+('F5', 'Maryam', 40, 'F6'),
+('F6', 'Stewart', 70, ''),
+('F7', 'Rohan', 6, 'F4'),
+('F8', 'Asha', 8, 'F4');
+
+select * from family;
+
+-- Find out the name of the parent (need to match one record from a table with some other records in the same table to find out the result - this is when you need to use a self join)
+-- For self join, there is no keyword called 'self join', we just use the join key word.
+
+select child.name as child_name
+, child.age as child_age
+, parent.name as parent_name
+, parent.age as parent_age
+from family as child
+join family as parent on child.parent_id = parent.member_id
+;
+
+-- return all the children even if it does not have parents
+select child.name as child_name
+, child.age as child_age
+, parent.name as parent_name
+, parent.age as parent_age
+from family as child
+join family as parent on child.parent_id = parent.member_id
+;
+
+

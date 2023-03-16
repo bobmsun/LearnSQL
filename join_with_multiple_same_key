@@ -1,5 +1,11 @@
 -- This file wants to demo the join when having multiple same keys in both table (not 1-1 join)
 
+-- join (--> inner join)
+-- left join (--> left outer join)
+-- right join (--> right outer join)
+-- full join (--> full outer join)
+
+
 -- Prepare "Staff" table
 drop table if exists staff;
 CREATE TABLE IF NOT EXISTS STAFF
