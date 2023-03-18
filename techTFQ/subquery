@@ -88,6 +88,15 @@ insert into sales values
 select * from employee;
 select * from department;
 
+-- There are 3 types of subquery:
+-- Scalary subquery:
+-- Multiple Rwo subquery:
+--       multiple row, single column
+--       multiple row, multiple column
+-- Correlated subquery
+-- Nested subquery
+
+
 -- Scalary subquery
 -- subquery awlays returns one row and one col
 select * from employee 
@@ -124,7 +133,7 @@ where (dept_name, salary) in (select dept_name, max(salary)  -- it's gonna match
 
 
 -- single column, multiple row subquery
-/* QUESTION: Find department who do not have any employees */
+/* QUESTION: Find department who does not have any employees */
 
 select * 
 from department
