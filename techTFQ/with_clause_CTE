@@ -101,6 +101,7 @@ join avg_sales av
 on ts.total_sales_per_store > av.avg_sales_for_all_stores
 ;
 
+-- 为什么要用 subquery？ subquery 的好处？
 -- Use a particular subquery multiple times -> should consider using a WITH clause
 -- 让人更 easy to read/maintain/understand/debug
 -- 可以 improve performance, 因为相同的 subquery 不用算多次了

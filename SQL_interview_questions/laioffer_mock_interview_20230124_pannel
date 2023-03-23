@@ -1,0 +1,115 @@
+We have a Payment table:
+
+Payment
+--------------------------------------------------
+payment_id  |  sender_id  |  receiver_id  |  amount  | fraud  |  date
+    int           int             int        float     binary    timestamp
+
+payment_id: a unique identifier of the payment
+sender_id: a unique identifier of the sender of the payment
+receiver_id: a unique identifier of the receiver of the payment
+fraud: fraud flag indicating whether a payment is a fraud or not (1 - fraud payment, 0 - non-fraudulent payment)
+
+
+
+
+1. What is the average transaction/payment amount by day over time?
+
+select date, avg(amount) 
+from Payment 
+group by date;
+
+
+
+
+2. Which day in the past has the highest fraud transaction rate?
+
+clarify: 如果有并列第一，是return 任意一个，还是 return 所有并列的？
+
+我自己的答案：
+
+with daily_fraud_rate as 
+(
+    select date, avg(fraud) as "fraud_rate"
+    from payment 
+    group by date 
+)
+
+select date
+from daily_fraud_rate 
+where fraud_rate = (select max(fraud_rate) from daily_fraud_rate);
+
+
+# 讲座上面试者的答案，我自己觉得不好：
+select date, sum(fraud)/count(fraud) as fraud_rate from Payment
+group by date 
+order by fraud_rate desc       # 面试者说：不确定这里能不能用上面define 的 alias；面试官说，不同的 sql system 可能不同，我们这里就先假设可以用 
+limit 1;
+
+
+
+
+
+3. What is the MAU (Monthly Active Users) in Dec 2020?
+
+Either you send money to someone, or you receive money from someone  都叫做 user （both way count）
+
+老师强调的点：a person can be both sender and receiver, so you may need to think about how to dedup
+
+
+(select distinct(sender_id)
+from Payment 
+where date between '1-dec-2020' and '31-dec-2020')
+
+Union
+
+(select distinct(receiver_id) from Payment 
+where date between '1-dec-2020' and '31-dec-2020')
+
+
+
+
+
+4. What is the unique number of payment pairs in Dec 2020?
+
+这道题的point：
+pair 可以是 either A send some money to B  or  B sends something to A ; A -> B and B -> A  count as the same pair 
+
+保证sender_id 和 receiver_id 小的那个在前面，大的在后面的，就可以达到 dedup了
+ min(sender_id, receiver_id) + '-' + max(receiver_id)
+
+
+select distinct a.*
+from (
+    select 
+    greatest(sender_id, receiver_id) || '-' || least(sender_id, receiver_id) as "pair"
+    from Payment
+    order by greatest(sender_id, receiver_id) || '-' || least(sender_id, receiver_id)   
+) a                   -- subquery 这里必须得给一个 alias，不然报错（不管用不用 alias， 都得给一个 alias）
+; 
+   
+-- 本题启示： greatest() vs. max()       least() vs. min()
+
+
+-- 想play with 以上逻辑，可以用下面 table 中的 sales_id 和 quantity
+drop table if exists sales;
+create table sales (
+    store_id     int,
+	store_name   varchar(20),
+	product      varchar(20),
+	quantity     int,
+	cost         int
+);
+
+insert into sales values
+(1, 'Apple Originals 1', 'iPhone 12 Pro', 1, 1000),
+(1, 'Apple Originals 1', 'MacBook pro 13', 3, 2000),
+(1, 'Apple Originals 1', 'AirPods Pro', 2, 280),
+(2, 'Apple Originals 2', 'iPhone 12 Pro', 2, 1000),
+(3, 'Apple Originals 3', 'iPhone 12 Pro', 1, 1000),
+(3, 'Apple Originals 3', 'MacBook pro 13', 1, 2000),
+(3, 'Apple Originals 3', 'MacBook Air', 4, 1100),
+(3, 'Apple Originals 3', 'iPhone 12', 2, 1000),
+(3, 'Apple Originals 3', 'AirPods Pro', 3, 280),
+(4, 'Apple Originals 4', 'iPhone 12 Pro', 2, 1000),
+(4, 'Apple Originals 4', 'MacBook pro 13', 1, 2500);
