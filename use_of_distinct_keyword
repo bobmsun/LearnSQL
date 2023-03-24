@@ -1,6 +1,6 @@
 -- This file is to demonstrate the use / behavior of the "distinct" keyword
 -- 如果两点 record，只有在 “所有query的column” 中（并不是table中有的所有 column）所有值都一样 [也就意味着两个record是duplicate]，
--- 对任何一个 column 做一个 distinct 就会去除 duplicate
+-- 对任何一个 column 做一个 distinct 就会去除这样的 duplicate
 
 
 -- Prepare "Staff" table

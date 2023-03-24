@@ -165,3 +165,13 @@ count(*) over(partition by dept_name) as count_of_emp,
 sum(e.salary) over(partition by dept_name) as sum_of_salary,
 avg(e.salary) over(partition by dept_name) as avg_of_salary
 from employee e;
+
+
+-- 以下是用于 part 2 frame clause 的讲解/对比
+select e.*,
+count(*) over(partition by dept_name order by emp_id) as count_of_emp,
+avg(e.salary) over(partition by dept_name order by emp_id) as avg_of_salary,
+sum(e.salary) over(partition by dept_name order by emp_id) as avg_of_salary,
+sum(e.salary) over(partition by dept_name) as avg_of_salary,
+max(e.salary) over(partition by dept_name order by emp_id) as max_of_salary
+from employee e;
