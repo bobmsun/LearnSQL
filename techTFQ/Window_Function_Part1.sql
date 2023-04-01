@@ -1,6 +1,6 @@
 -- Video: https://www.youtube.com/watch?v=Ww71knvhQ-s
 
-drop table employee;
+drop table if exists employee;
 create table employee
 ( emp_ID int
 , emp_NAME varchar(50)
@@ -60,7 +60,7 @@ from employee e;
 
 
 -- row_number(), rank() and dense_rank()
--- row_number() assigns a unique value to each of the record in the table 但是自己试了一下 row number 不见得是按照 record 本身在 tabele 中的顺序 assign 的，就是随机 assin 的
+-- row_number() assigns a unique value to each of the record in the table 但是自己试了一下 row number 不见得是按照 record 本身在 tabele 中的顺序 assign 的，就是随机 assign 的
 -- （会发现 emp_id 不是sorted，如果需要某种顺序，需要在 over clause 中加 order by）
 select e.*,
 row_number() over(partition by dept_name) as rn
@@ -88,7 +88,7 @@ select * from (
 where x.rnk < 4;
 
 
--- Checking the different between rank, dense_rnk and row_number window functions:
+-- Checking the difference between rank, dense_rnk, and row_number window functions:
 select e.*,
 rank() over(partition by dept_name order by salary desc) as rnk,
 dense_rank() over(partition by dept_name order by salary desc) as dense_rnk,

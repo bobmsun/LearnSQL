@@ -112,7 +112,7 @@ on e.salary > avg_sal.sal
 
 -- multiple row subquery: a subquery returns multiple rows
 -- there are two types of multiple row subquery: 
--- 1. subquery which returns multiple column and multiple rows
+-- 1. subquery which returns multiple columns and multiple rows
 -- 2. subquery which returns only 1 column and multiple rows
 
 -- multiple column, multiple row subquery
@@ -128,6 +128,7 @@ from employee
 where (dept_name, salary) in (select dept_name, max(salary)  -- it's gonna match the combination of dept_name and salary from the employee table with the values returned by the subquery.
 							  from employee
 							  group by dept_name);
+-- 注意：上面这里用的是 in operator，不是 =
 -- = -> expect the right hand side always returns one row
 -- in -> if right hand side returns multiple rows
 
@@ -155,7 +156,7 @@ where salary > (select avg(salary)
 				from employee e2
 				where e2.dept_name = e1.dept_name);
 -- 这时，单独run subquery 会错，因为 subquery depends on some of the values from the outer query. SQL will be able to process the subquery from the beginning.
--- For every single rows that is processed in the outer query, it will execute the outer query.
+-- For every single rows that is processed in the outer query, it will execute the inner query.
 -- In this particular case, 因为 employee table 有 24 different records, this subquery will be executed 24 times.
 -- 每次执行时，it's gonna fetch the dept_name from the outer query
 

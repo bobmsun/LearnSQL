@@ -1,6 +1,6 @@
 -- Script to create the Product table and load data into it.
 
-DROP TABLE product;
+DROP TABLE if exists product;
 CREATE TABLE product
 ( 
     product_category varchar(255),
@@ -77,14 +77,14 @@ from product;
 --     If an ORDER BY clause is used for an aggregate function, an explicit frame clause is required. 
 --     自悟+自试：aggregate window 应该是默认 apply to the entire partition(如果不加 order by 的话)；如果加了 order by，就是默认的 frame 了（从头到 current row）
 
--- Ranking Window Function ( row_number, rank, dense_rank, ...)
---     OVER clause The window clauses for the function. The OVER clause cannot contain an explicit frame specification, but must include an ORDER BY clause. 
+-- Ranking Window Function ( row_number, rank, dense_rank, cume_dist, percent_rank, ntile ...)
+--     The OVER clause cannot contain an explicit frame specification, but must include an ORDER BY clause. 
 --     自悟：从时候make sense 的角度讲，rank 和 dense_rank 是一定要加 order by 的；
 --     自己试了一下，row_number 加不加 order by 都行
 
 -- Value Window Function (lag, lead, first_value, last_value)
 --     The frame clause refines the set of rows in a function’s window, including or excluding sets of rows within the ordered result.
---     根据视频，lag, lead, first_value 可以不explicitly 加任何 frame，但是last_value 需要改 frame
+--     根据视频，lag, lead, first_value 可以不 explicitly 加任何 frame，但是 last_value 需要改 frame
 
 
 

@@ -49,6 +49,7 @@ select *
 from employee e, average_salary av
 where e.salary > av.avg_sal;
 
+
 with average_salary (avg_sal) as 
         (select cast(avg(salary) as int) from employee)
 select * 

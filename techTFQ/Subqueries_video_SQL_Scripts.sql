@@ -1,8 +1,8 @@
 
-DROP TABLE employee_history;
-DROP TABLE EMPLOYEE;
-drop table department;
-DROP table sales ;
+DROP TABLE if exists employee_history;
+DROP TABLE if exists EMPLOYEE;
+drop table if exists department;
+DROP table if exists sales;
 
 create table department
 (
