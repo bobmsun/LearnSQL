@@ -59,7 +59,8 @@ from product;
 -- LASR_VALUE
 select *,
 first_value(product_name) over(partition by product_category order by price desc) as most_exp_product,
-last_value(product_name) over(partition by product_category order by price desc) as least_exp_product
+last_value(product_name) over(partition by product_category order by price desc) as least_exp_product,
+last_value(product_name) over(partition by product_category) as least_exp_product   -- 自己加的：去掉了 order by，与上面对比
 from product;
 -- 会发现 last_value 在这里并没有给我们想要的结果
 
@@ -131,11 +132,25 @@ select *,
 --last_value(product_name)
 last_value(price)
 	over (partition by product_category order by price desc
-		  rows between 2 preceding and 2 following)                  -- 视频里这里用的是 range，但自己试了一下，range 好像不是我们expect的结果，用 rows 就对了
+		  rows between 2 preceding and 2 following)            -- 视频里这里用的是 range，但自己试了一下，range 好像不是我们expect的结果，用 rows 就对了
 	as least_exp_product
 from product
 where product_category = 'Phone';
 
+
+
+
+-- 自己加：计算 cumulative sum &. rolling statistics (rolling sum / moving average) 对比
+select *, 
+sum(price) over(order by price desc rows between unbounded preceding and current row) as "cumulative sum",
+sum(price) over(rows between 3 preceding and current row) as "rolling-sum-rows",
+sum(price) over(rows between 3 preceding and current row) as "rolling-sum-range",
+sum(price) over(),
+avg(price) over(rows between 3 preceding and current row) as "MA-4-rows",
+avg(price) over(rows between 3 preceding and current row) as "MA-4-range"
+from product
+where product_category = 'Phone'
+;
 
 
 
@@ -206,6 +221,15 @@ from (
 
 -- We can use NTILE function whenever we want to group a few records into some buckets.
 
+-- 自己试：上面的例子这样写就可以
+select product_name,
+case 
+	when (ntile(3) over(order by price desc)) = 1 then 'Expensive Phones'
+	when (ntile(3) over(order by price desc)) = 2 then 'Mid Range Phones'
+	when (ntile(3) over(order by price desc)) = 3 then 'Cheaper Phones'
+end as "bucket"
+from product
+where product_category = 'Phone';
 
 
 
@@ -241,3 +265,4 @@ from (
 where x.product_name='Galaxy Z Fold 3';
 
 
+-- 自我问题：cume_dist 和 percent_rank 好像没有 frame 的概念，就是直接 apply 到整个 partition 上？
